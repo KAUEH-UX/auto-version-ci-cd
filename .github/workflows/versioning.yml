@@ -1,23 +1,32 @@
 name: Auto Versioning
+
 on:
   push:
     branches: [main]
+
 jobs:
   version-update:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
     - name: Read and increment version
       run: |
-        current_version=$(cat version.txt | sed 's/v//')
-        IFS='.' read -r major minor patch <<< "$current_version"
+        current_version=$(cat version.txt)
+        echo "Current version: $current_version"
+        version_number=$(echo "$current_version" | sed 's/v//')
+        IFS='.' read -r major minor patch <<< "$version_number"
         new_patch=$((patch + 1))
         new_version="v$major.$minor.$new_patch"
-        echo $new_version > version.txt
-    - name: Commit new version
+        echo "New version: $new_version"
+        echo "$new_version" > version.txt
+        
+    - name: Commit and push changes
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add version.txt
-        git commit -m "Auto-increment version to $(cat version.txt)"
+        git commit -m "Auto-increment version [skip ci]" || exit 0
         git push
