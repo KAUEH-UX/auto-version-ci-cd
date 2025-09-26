@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Read and increment version
       run: |
@@ -22,11 +20,7 @@ jobs:
         new_version="v$major.$minor.$new_patch"
         echo "New version: $new_version"
         echo "$new_version" > version.txt
+        echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
         
-    - name: Commit and push changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add version.txt
-        git commit -m "Auto-increment version [skip ci]" || exit 0
-        git push
+    - name: Show new version
+      run: echo "Version would be updated to: $NEW_VERSION"
