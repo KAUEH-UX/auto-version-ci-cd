@@ -1,26 +1,13 @@
 name: Auto Versioning
 
-on:
-  push:
-    branches: [main]
+on: [push]
 
 jobs:
-  version-update:
+  version-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-        
-    - name: Read and increment version
-      run: |
-        current_version=$(cat version.txt)
-        echo "Current version: $current_version"
-        version_number=$(echo "$current_version" | sed 's/v//')
-        IFS='.' read -r major minor patch <<< "$version_number"
-        new_patch=$((patch + 1))
-        new_version="v$major.$minor.$new_patch"
-        echo "New version: $new_version"
-        echo "$new_version" > version.txt
-        echo "NEW_VERSION=$new_version" >> $GITHUB_ENV
-        
-    - name: Show new version
-      run: echo "Version would be updated to: $NEW_VERSION"
+      - uses: actions/checkout@v3
+      - name: Check current version
+        run: cat version.txt
+      - name: Show message
+        run: echo "Version automation would work here"
